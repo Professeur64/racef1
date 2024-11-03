@@ -126,25 +126,30 @@
         });
 
         // جلب معلومات الحلبة
-        const firstRaceId = races[0].circuitId; // أخذ أول حلبة من قائمة السباقات
-        fetch(`https://ergast.com/api/f1/circuits/${firstRaceId}.json`)
-          .then(response => response.json())
-          .then(data => {
-            const circuitInfoDiv = document.getElementById('circuit-info');
-            circuitInfoDiv.innerHTML = '';
+        // احصل على أول سباق فقط إذا كان هناك سباقات
+        if (races.length > 0) {
+          const firstRaceId = races[0].circuitId; // أخذ أول حلبة من قائمة السباقات
+          fetch(`https://ergast.com/api/f1/circuits/${firstRaceId}.json`)
+            .then(response => response.json())
+            .then(data => {
+              const circuitInfoDiv = document.getElementById('circuit-info');
+              circuitInfoDiv.innerHTML = '';
 
-            const circuit = data.MRData.CircuitTable.Circuits[0];
-            circuitInfoDiv.innerHTML = `
-              <h3>${circuit.circuitName}</h3>
-              <p>المدينة: ${circuit.Location.locality}</p>
-              <p>الدولة: ${circuit.Location.country}</p>
-              <p>الإحداثيات: ${circuit.Location.lat}, ${circuit.Location.long}</p>
-            `;
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            document.getElementById('circuit-info').innerHTML = 'حدث خطأ في تحميل بيانات الحلبة';
-          });
+              const circuit = data.MRData.CircuitTable.Circuits[0];
+              circuitInfoDiv.innerHTML = `
+                <h3>${circuit.circuitName}</h3>
+                <p>المدينة: ${circuit.Location.locality}</p>
+                <p>الدولة: ${circuit.Location.country}</p>
+                <p>الإحداثيات: ${circuit.Location.lat}, ${circuit.Location.long}</p>
+              `;
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              document.getElementById('circuit-info').innerHTML = 'حدث خطأ في تحميل بيانات الحلبة';
+            });
+        } else {
+          document.getElementById('circuit-info').innerHTML = 'لا توجد سباقات حالية لعرض معلومات الحلبة.';
+        }
       })
       .catch(error => {
         console.error('Error:', error);
