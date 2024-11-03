@@ -9,18 +9,35 @@
       font-family: Arial, sans-serif;
       direction: rtl;
       text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
-    h1, h2, h3 {
+    h1 {
       color: #ff1e1e;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
     }
     .section {
-      margin-bottom: 20px;
+      flex: 1;
+      margin: 10px;
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #333;
     }
     .item {
       margin: 10px 0;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      border-bottom: 1px solid #ddd;
     }
   </style>
 </head>
@@ -28,24 +45,26 @@
 
   <h1>ترتيب الفورمولا 1 - السائقين، المباريات، والنتائج (2024)</h1>
 
-  <div class="section">
-    <h2>ترتيب السائقين</h2>
-    <div id="standings">
-      <p>جاري تحميل بيانات ترتيب السائقين...</p>
+  <div class="container">
+    <div class="section">
+      <h2>ترتيب السائقين</h2>
+      <div id="standings">
+        <p>جاري تحميل بيانات ترتيب السائقين...</p>
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <h2>ترتيب المباريات</h2>
-    <div id="races">
-      <p>جاري تحميل بيانات ترتيب المباريات...</p>
+    <div class="section">
+      <h2>ترتيب المباريات</h2>
+      <div id="races">
+        <p>جاري تحميل بيانات ترتيب المباريات...</p>
+      </div>
     </div>
-  </div>
 
-  <div class="section">
-    <h2>نتائج السباقات</h2>
-    <div id="results">
-      <p>جاري تحميل بيانات نتائج السباقات...</p>
+    <div class="section">
+      <h2>نتائج السباقات</h2>
+      <div id="results">
+        <p>جاري تحميل بيانات نتائج السباقات...</p>
+      </div>
     </div>
   </div>
 
@@ -62,12 +81,12 @@
           const driverDiv = document.createElement('div');
           driverDiv.className = 'item';
 
-          driverDiv.innerHTML = 
+          driverDiv.innerHTML = `
             <h3>${driver.Driver.givenName} ${driver.Driver.familyName}</h3>
             <p>النقاط: ${driver.points}</p>
             <p>الترتيب: ${driver.position}</p>
             <p>الفريق: ${driver.Constructors[0].name}</p>
-          ;
+          `;
           standingsDiv.appendChild(driverDiv);
         });
       })
@@ -88,12 +107,12 @@
           const raceDiv = document.createElement('div');
           raceDiv.className = 'item';
 
-          raceDiv.innerHTML = 
+          raceDiv.innerHTML = `
             <h3>${race.raceName}</h3>
             <p>التاريخ: ${race.date}</p>
             <p>المكان: ${race.Circuit.circuitName}</p>
             <p>الدولة: ${race.Circuit.Location.country}</p>
-          ;
+          `;
           racesDiv.appendChild(raceDiv);
         });
       })
@@ -113,18 +132,18 @@
         const raceDiv = document.createElement('div');
         raceDiv.className = 'item';
 
-        raceDiv.innerHTML = <h3>نتائج سباق ${race.raceName} - ${race.date}</h3>;
+        raceDiv.innerHTML = `<h3>نتائج سباق ${race.raceName} - ${race.date}</h3>`;
         
         race.Results.forEach(result => {
           const driverResultDiv = document.createElement('div');
           driverResultDiv.className = 'item';
 
-          driverResultDiv.innerHTML = 
+          driverResultDiv.innerHTML = `
             <p><strong>${result.position} - ${result.Driver.givenName} ${result.Driver.familyName}</strong></p>
             <p>الفريق: ${result.Constructor.name}</p>
             <p>عدد اللفات: ${result.laps}</p>
             <p>الوقت: ${result.Time ? result.Time.time : 'N/A'}</p>
-          ;
+          `;
           raceDiv.appendChild(driverResultDiv);
         });
         
