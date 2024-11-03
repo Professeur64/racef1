@@ -68,6 +68,15 @@
     </div>
   </div>
 
+  <div class="container">
+    <div class="section">
+      <h2>معلومات الحلبة</h2>
+      <div id="circuit-info">
+        <p>جاري تحميل بيانات معلومات الحلبة...</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     // جلب بيانات ترتيب السائقين
     fetch('https://ergast.com/api/f1/current/driverStandings.json')
@@ -115,6 +124,27 @@
           `;
           racesDiv.appendChild(raceDiv);
         });
+
+        // جلب معلومات الحلبة
+        const firstRaceId = races[0].circuitId; // أخذ أول حلبة من قائمة السباقات
+        fetch(`https://ergast.com/api/f1/circuits/${firstRaceId}.json`)
+          .then(response => response.json())
+          .then(data => {
+            const circuitInfoDiv = document.getElementById('circuit-info');
+            circuitInfoDiv.innerHTML = '';
+
+            const circuit = data.MRData.CircuitTable.Circuits[0];
+            circuitInfoDiv.innerHTML = `
+              <h3>${circuit.circuitName}</h3>
+              <p>المدينة: ${circuit.Location.locality}</p>
+              <p>الدولة: ${circuit.Location.country}</p>
+              <p>الإحداثيات: ${circuit.Location.lat}, ${circuit.Location.long}</p>
+            `;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('circuit-info').innerHTML = 'حدث خطأ في تحميل بيانات الحلبة';
+          });
       })
       .catch(error => {
         console.error('Error:', error);
