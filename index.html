@@ -3,29 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ترتيب السائقين في الفورمولا 1</title>
+  <title>ترتيب الفورمولا 1 - السائقين والمباريات والنتائج</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       direction: rtl;
       text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
     }
-    h1 {
+    h1, h2, h3 {
       color: #ff1e1e;
     }
-    .driver {
+    .section {
+      margin: 20px auto;
+      max-width: 800px; /* عرض أقصى للقسم */
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .item {
       margin: 10px 0;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
+      background-color: #fafafa;
+      transition: background-color 0.3s;
+    }
+    .item:hover {
+      background-color: #eaeaea;
+    }
+    @media (min-width: 600px) {
+      .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      h1 {
+        font-size: 2.5em; /* حجم أكبر على الشاشات الأكبر */
+      }
+    }
+    @media (min-width: 768px) {
+      .section {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap; /* يجعل العناصر تتوزع بشكل مناسب */
+      }
+      .item {
+        flex: 1 1 calc(30% - 20px); /* عناصر مرنة بنسبة 30% */
+        margin: 10px; /* فراغ بين العناصر */
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>ترتيب السائقين في الفورمولا 1 (2024)</h1>
-  <div id="standings">
-    <p>جاري تحميل البيانات...</p>
+  <h1>ترتيب الفورمولا 1 - السائقين، المباريات، والنتائج (2024)</h1>
+
+  <div class="section" id="standings">
+    <h2>ترتيب السائقين</h2>
+    <p>جاري تحميل بيانات ترتيب السائقين...</p>
+  </div>
+
+  <div class="section" id="races">
+    <h2>ترتيب المباريات</h2>
+    <p>جاري تحميل بيانات ترتيب المباريات...</p>
+  </div>
+
+  <div class="section" id="results">
+    <h2>نتائج السباقات</h2>
+    <p>جاري تحميل بيانات نتائج السباقات...</p>
   </div>
 
   <script>
@@ -34,13 +83,12 @@
       .then(response => response.json())
       .then(data => {
         const standingsDiv = document.getElementById('standings');
-        standingsDiv.innerHTML = ''; // تفريغ المحتوى الحالي
+        standingsDiv.innerHTML = '';
 
         const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
         standings.forEach(driver => {
-          // إنشاء عنصر HTML لكل سائق
           const driverDiv = document.createElement('div');
-          driverDiv.className = 'driver';
+          driverDiv.className = 'item';
 
           driverDiv.innerHTML = `
             <h3>${driver.Driver.givenName} ${driver.Driver.familyName}</h3>
@@ -53,7 +101,66 @@
       })
       .catch(error => {
         console.error('Error:', error);
-        document.getElementById('standings').innerHTML = 'حدث خطأ في تحميل البيانات';
+        document.getElementById('standings').innerHTML = 'حدث خطأ في تحميل بيانات السائقين';
+      });
+
+    // جلب بيانات ترتيب المباريات
+    fetch('https://ergast.com/api/f1/current.json')
+      .then(response => response.json())
+      .then(data => {
+        const racesDiv = document.getElementById('races');
+        racesDiv.innerHTML = '';
+
+        const races = data.MRData.RaceTable.Races;
+        races.forEach(race => {
+          const raceDiv = document.createElement('div');
+          raceDiv.className = 'item';
+
+          raceDiv.innerHTML = `
+            <h3>${race.raceName}</h3>
+            <p>التاريخ: ${race.date}</p>
+            <p>المكان: ${race.Circuit.circuitName}</p>
+            <p>الدولة: ${race.Circuit.Location.country}</p>
+          `;
+          racesDiv.appendChild(raceDiv);
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('races').innerHTML = 'حدث خطأ في تحميل بيانات المباريات';
+      });
+
+    // جلب بيانات نتائج السباقات
+    fetch('https://ergast.com/api/f1/current/last/results.json')
+      .then(response => response.json())
+      .then(data => {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        const race = data.MRData.RaceTable.Races[0]; // الحصول على آخر سباق
+        const raceDiv = document.createElement('div');
+        raceDiv.className = 'item';
+
+        raceDiv.innerHTML = `<h3>نتائج سباق ${race.raceName} - ${race.date}</h3>`;
+        
+        race.Results.forEach(result => {
+          const driverResultDiv = document.createElement('div');
+          driverResultDiv.className = 'item';
+
+          driverResultDiv.innerHTML = `
+            <p><strong>${result.position} - ${result.Driver.givenName} ${result.Driver.familyName}</strong></p>
+            <p>الفريق: ${result.Constructor.name}</p>
+            <p>عدد اللفات: ${result.laps}</p>
+            <p>الوقت: ${result.Time ? result.Time.time : 'N/A'}</p>
+          `;
+          raceDiv.appendChild(driverResultDiv);
+        });
+        
+        resultsDiv.appendChild(raceDiv);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('results').innerHTML = 'حدث خطأ في تحميل بيانات نتائج السباقات';
       });
   </script>
 
